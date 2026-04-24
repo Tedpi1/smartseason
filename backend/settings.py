@@ -77,8 +77,8 @@ EMAIL_USE_SSL = False
 
 #from .env  
 
-EMAIL_HOST_USER = 'moroted16@gmail.com'
-EMAIL_HOST_PASSWORD = '#Teddy@2034'
+EMAIL_HOST_USER = os.getenv('email')
+EMAIL_HOST_PASSWORD = os.getenv('pass')
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
