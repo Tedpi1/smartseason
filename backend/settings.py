@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,6 +82,7 @@ EMAIL_USE_SSL = False
 
 EMAIL_HOST_USER = os.getenv('email')
 EMAIL_HOST_PASSWORD = os.getenv('pass')
+
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
