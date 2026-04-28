@@ -53,6 +53,7 @@ class Field(models.Model):
     )
 
     name = models.CharField(max_length=100)
+    agent = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, blank=True)
     crop_type = models.CharField(max_length=100)
     planting_date = models.DateField()
 

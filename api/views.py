@@ -155,25 +155,34 @@ def update_field(request, id):
 @csrf_exempt
 def field_dashboard(request):
 
-    data = Field.objects.aggregate(
-        healthy_count=Count(
-            Case(
-                When(stage__in=[2, 3], then=1),
-                output_field=IntegerField()
-            )
-        ),
-        attention_count=Count(
-            Case(
-                When(stage=1, then=1),
-                output_field=IntegerField()
-            )
-        ),
-        harvested_count=Count(
-            Case(
-                When(stage=4, then=1),
-                output_field=IntegerField()
-            )
-        ),
+    user_id = request.GET.get("user_id")
+    role = request.GET.get("role")
+
+
+    if request.body:
+        try:
+            body = json.loads(request.body.decode("utf-8"))
+            user_id = user_id or body.get("user_id")
+            role = role or body.get("role")
+        except json.JSONDecodeError:
+            pass
+
+    if role == "1" or role is None:
+        fields = Field.objects.all()
+
+    elif role == "2":
+        if not user_id:
+            return JsonResponse({"error": "user_id required for agent"}, status=400)
+
+        fields = Field.objects.filter(assigned_to_id=user_id)
+
+    else:
+        return JsonResponse({"error": "Invalid role"}, status=400)
+
+    data = fields.aggregate(
+        healthy_count=Count(Case(When(stage__in=[2, 3], then=1), output_field=IntegerField())),
+        attention_count=Count(Case(When(stage=1, then=1), output_field=IntegerField())),
+        harvested_count=Count(Case(When(stage=4, then=1), output_field=IntegerField())),
         total=Count("id")
     )
 
@@ -183,11 +192,38 @@ def field_dashboard(request):
         "harvested": data["harvested_count"],
         "total_fields": data["total"]
     })
-
 @csrf_exempt
 def field_status_overview(request):
 
-    data = Field.objects.aggregate(
+    user_id = request.GET.get("user_id")
+    role = request.GET.get("role")
+
+    
+    if request.body:
+        try:
+            body = json.loads(request.body.decode("utf-8"))
+            user_id = user_id or body.get("user_id")
+            role = role or body.get("role")
+        except json.JSONDecodeError:
+            pass
+
+
+    if role == "1":
+        
+        fields = Field.objects.all()
+
+    elif role == "2":
+        
+        if not user_id:
+            return JsonResponse({"error": "user_id required for agent"}, status=400)
+
+        fields = Field.objects.filter(assigned_to_id=user_id)
+
+    else:
+    
+        return JsonResponse({"error": "Invalid role"}, status=400)
+
+    data = fields.aggregate(
         total=Count("id"),
 
         risk_count=Count(
@@ -233,3 +269,24 @@ def field_status_overview(request):
         },
         "total_fields": data["total"]
     })
+    
+# fetch assigned feilds
+
+
+def fetch_assigned_fields(request):
+    fields = Field.objects.select_related('assigned_to').all()
+
+    data = []
+    for field in fields:
+        data.append({
+            "field_id": field.id,
+            "field_name": field.name,
+            "crop_type":field.crop_type,
+            "stage": field.get_stage_display(),
+            "agent": {
+                "id": field.assigned_to.id if field.assigned_to else None,
+                "username": field.assigned_to.username if field.assigned_to else None,
+            } if field.assigned_to else None
+        })
+
+    return JsonResponse(data, safe=False)   
