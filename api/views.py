@@ -289,4 +289,31 @@ def fetch_assigned_fields(request):
             } if field.assigned_to else None
         })
 
-    return JsonResponse(data, safe=False)   
+    return JsonResponse(data, safe=False)
+
+def fetch_agents_fields(request):
+    id = request.GET.get('id')
+
+    fields = Field.objects.filter(assigned_to_id=id)
+
+    data = []
+    for field in fields:
+        data.append({
+            "field_id": field.id,
+            "field_name": field.name,
+            "crop_type": field.crop_type,
+            "stage": field.get_stage_display(),
+        })
+
+    return JsonResponse(data, safe=False)
+
+def fetch_agents(request):
+    agents= User.objects.filter(is_agent=True)
+    data = []
+    for agent in agents:
+        data.append({
+            "id": agent.id,
+            "username": agent.username,
+            "email": agent.email,
+        })
+    return JsonResponse(data, safe=False)

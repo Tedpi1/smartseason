@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_api, register_user, create_fields, update_field, field_dashboard,field_status_overview, fetch_assigned_fields
+from .views import login_api, register_user, create_fields, update_field, field_dashboard,field_status_overview, fetch_assigned_fields, fetch_agents_fields
 
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/count/', field_dashboard, name='field_dashboard'),
     path('api/overview/', field_status_overview, name='field_status_overview'),
     path('api/assignment/', fetch_assigned_fields, name='fetch_assigned_fields'),
+    path('api/fields/', fetch_agents_fields, name='fetch_agents_fields'),
 ]
