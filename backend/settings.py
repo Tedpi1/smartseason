@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import pymysql
+pymysql.install_as_MySQLdb()
 
 load_dotenv()
 
@@ -30,9 +32,9 @@ SECRET_KEY = 'django-insecure-d_0o-%yzh3413rk3x*q8$%dnis1gn*wpa2rj12hky)1la=+k3g
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'smartseason.onrender.com',
-    "localhost",
-    "127.0.0.1"
+    # 'smartseason.onrender.com',
+    # "localhost",
+    # "127.0.0.1"
 ]
 
 
@@ -98,11 +100,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smartseason_db',
-        'USER': 'root',
-        'PASSWORD': '2044',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
